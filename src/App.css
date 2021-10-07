@@ -1,0 +1,35 @@
+.navbar {
+  padding: 20px;
+  background-color: rgb(233,224,222);
+}
+
+.search{
+  display:flex;
+  justify-content: center;
+  padding: 20px 0 0 0;
+}
+
+.card{
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+.list {
+  margin: auto;
+  height: 80px;
+  width: 16%;
+  overflow: hidden; 
+  overflow-y: auto;
+}
+
+.suggestion{
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.suggestion:hover{
+  background-color: lightskyblue;
+}
