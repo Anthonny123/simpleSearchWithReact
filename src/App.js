@@ -1,8 +1,11 @@
 import React, {useEffect, useState} from 'react'
 import {Form, Card, Image, Icon, CardHeader} from 'semantic-ui-react'
 import './App.css'
+const {Octokit} = require("@octokit/core");
 
 function App() {
+  const octokit = new Octokit({auth:"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"})
+
   const [name, setName] = useState('');
   const [users, setUsers] = useState([]);
   const [userName, setUsername] = useState('');
@@ -15,14 +18,28 @@ function App() {
   const [suggestions, setSuggestions] = useState([])
 
 
+  const loadUsers = async()=>{
+    const res = await octokit.request("GET /search/users",{
+      q:`${userInput} in:login`
+    }).then((e)=>{
+      console.log(e.data.items)
+      setUsers(e.data.items)
+      //setData(e.data.items)
+      console.log(userInput)
+    })
+    
+  }
+
   useEffect(() => {
-    fetch(`https://api.github.com/users`)
+    /*fetch(`https://api.github.com/users`)
     .then(res => res.json())
     .then(data =>{
       setUsers(data)
       //setData(data)
-      console.log(data)
-    })
+      //console.log(data)
+    })*/
+    
+    loadUsers();
   }, []);
 
 
@@ -44,8 +61,8 @@ function App() {
         return user.login.match(regex)
       })
     }
-    setSuggestions(matches)
     setUserInput(e)
+    setSuggestions(matches)
   }
 
 
@@ -64,7 +81,6 @@ function App() {
   }
 
   const onSuggestionHandler = (text)=>{
-    console.log(text)
     setUserInput(text)
     setSuggestions([]);
   }
@@ -78,7 +94,13 @@ function App() {
         <Form onSubmit = {handleSubmit}>
           <Form.Group>
             <Form.Input placeholder='Github user' name='github user' 
-              onChange = {e => handlerSearch(e.target.value)}
+              onChange = {e => {
+                handlerSearch(e.target.value) 
+                setUserInput(e.target.value)
+                if(userInput.length>=3&&userInput.length<=8){
+                  loadUsers()
+                }
+              }}
               value = {userInput}
             />
             
@@ -98,30 +120,25 @@ function App() {
             src={avatar}
             wrapped ui={false}
           ></Image>
+
           <Card.Content>
             <Card.Header>{name}</Card.Header>
             <CardHeader>{userName}</CardHeader>
-              <Card.Meta>
-
-              </Card.Meta>
-              <Card.Description>
-                
-              </Card.Description>
             </Card.Content>
             <Card.Content extra>
-              <a>
+              <a href = {`https://github.com/${userName}?tab=followers`}>
                 <Icon name='user' />
                 {followers} Followers
               </a>
             </Card.Content>
             <Card.Content extra>
-              <a>
+              <a href={`https://github.com/${userName}?tab=repositories`}>
                 <Icon name='user' />
                 {repos} Repos
               </a>
             </Card.Content>
             <Card.Content extra>
-              <a>
+              <a href = {`https://github.com/${userName}?tab=following`}>
                 <Icon name='user' />
                 {following} Following
               </a>
